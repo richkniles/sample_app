@@ -17,7 +17,26 @@
 			<%= render 'layouts/footer'%>
 		</div>
 		<div class="container">
-			<%= debug(params) if Rails.env.development? %>
-		</div>
+			<% if Rails.env.development? %>
+				Params:<br>
+				<%= debug(params)  %><br>
+				Cookie jar:<br>
+				<%= request.cookie_jar.inspect %><br>
+				Authorization:<br>
+				<%= request.authorization %><br>
+				Original method:<br>
+				<%= request.method %><br>
+				Original url:<br>
+				<%= request.original_url %><br>
+				Request method:<br>
+				<%= request.request_method %><br>
+				Query params:<br>
+				<%= debug(request.query_parameters) %><br>
+				Request params:<br>
+				<%= debug(request.request_parameters) %><br>
+				Raw post:<br>
+				<%= debug(request.raw_post) %><br>
+			<% end %>
+		</div> 
 	</body>
 </html>

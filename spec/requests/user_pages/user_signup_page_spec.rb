@@ -96,6 +96,7 @@ describe "user signup page" do
 
         describe "try to create another user with same email" do
           before do 
+            click_link "Sign out"
             visit signup_path
             fill_in "Name",         with: "Example User"
             fill_in "Email",        with: "user@example.com"

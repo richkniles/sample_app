@@ -129,6 +129,14 @@ describe User do
     its(:remember_token) { should_not be_blank }
   end
   
+  describe "when try to access admin attribute through the controller" do
+    it "should not allow access to admin" do
+      expect do
+        @user.assign_attributes(admin: true)
+      end.should raise_error(ActiveModel::MassAssignmentSecurity::Error)
+    end
+  end
+  
   describe "with admin attribute set to true" do
     before { @user.toggle!(:admin) }
     
