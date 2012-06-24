@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
   
   def feed
     # preliminary code to demo
-    Micropost.where("user_id = ?", id)
+    Micropost.where("user_id >= 0")
   end
   
   private

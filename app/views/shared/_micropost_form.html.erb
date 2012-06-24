@@ -3,5 +3,23 @@
 	<div class = "field">
 		<%= f.text_area :content, placeholder: "Compose new micropost...", rows: 4 %>
 	</div>
-	<%= f.submit "Post", class: "btn btn-large btn-primary" %>
+	<div class = "span2">
+		<%= f.submit "Post", class: "btn btn-large btn-primary" %>
+	</div>
+	<div id = "chars-left", class="chars-left">140 remaining chars</div>
+	
+	
+	<script type="text/javascript">
+		function displayRemainingChars()
+		{
+			len = document.getElementById("micropost_content").value.length;
+			charsRemainingElem = document.getElementById("chars-left");
+			if (len < 140)
+				charsRemainingElem.innerHTML=""+(140-len) + " remaining";
+			else
+				charsRemainingElem.innerHTML="too long!"
+		}
+		self.setInterval("displayRemainingChars()", 500)
+	</script>
+	
 <% end %>

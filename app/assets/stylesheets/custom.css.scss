@@ -165,6 +165,12 @@ input, textarea, select, .uneditable-input {
 .timestamp {
 	color: $grayLight;
 }
+.chars-left {
+	color: #00f;
+}
+.chars-left-over {
+	color: #f00;
+}
 .gravatar {
 	float: left;
 	margin-right: 10px;

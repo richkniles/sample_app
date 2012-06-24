@@ -38,16 +38,57 @@ describe "Static pages" do
     describe 'for signed_in user' do
       let(:user) { FactoryGirl.create(:user) }
       before do
-        FactoryGirl.create(:micropost, user: user, content: "foo")
-        FactoryGirl.create(:micropost, user: user, content: "bar")
+        FactoryGirl.create(:micropost, user: user, content: "micropost 1.")
         sign_in user
         visit root_path
       end
     
+      it "should show the feed and paginate" do
+        page.should have_content("1 micropost")
+        30.times  do |i| 
+          FactoryGirl.create(:micropost, user: user, content: "micropost #{i+2}.")
+        end
+        visit root_path
+        page.should have_content("31 microposts")
+        page.should have_selector("div.pagination") 
+        30.times do |i|
+          page.should have_content("micropost #{i+2}") 
+        end
+        # note the '1.' The period is required to avoid match with micropost 10
+        page.should_not have_content("micropost 1.") 
+      end
+
+      
       it "should render the user feed" do
         user.feed.each do |item|
           page.should have_selector("li##{item.id}", text: item.content)
         end
+      end
+      
+      describe "delete links" do
+        let (:other_user) { FactoryGirl.create(:user) }
+        before do
+          FactoryGirl.create(:micropost, user: other_user, content: "should have delete link") 
+          visit root_path
+        end
+        it "should only display delete links for signed-in user" do
+          user.feed.each do |item|
+            list_item = find_by_id("#{item.id}")
+            if (item.user_id != user.id)
+              list_item.should_not have_link("delete")
+            else
+              list_item.should have_link("delete")
+            end
+          end          
+        end
+      end
+      
+      describe "should wrap long words in micropost content display" do
+        before do
+          FactoryGirl.create(:micropost, user: user, content: "a"*140)
+          visit root_path
+        end
+        it { should_not have_content("a"*31) }
       end
     end
   end
