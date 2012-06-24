@@ -46,9 +46,6 @@ describe "User pages" do
         it { should_not have_link('delete', href: user_path(admin)) }
         it "should not delete the admin in any case" do
           expect { delete user_path(admin) }.to_not change(User, :count)
-          describe "and it should redirect to root" do
-            specify { response.should redirect_to(root_path) }
-          end
         end    
       end
     end

@@ -13,6 +13,7 @@
 class User < ActiveRecord::Base
   attr_accessible :email, :name, :password, :password_confirmation
   has_secure_password
+  has_many :microposts, dependent: :destroy
   
   before_save { self.email.downcase! }
   before_save :create_remember_token
@@ -26,6 +27,11 @@ class User < ActiveRecord::Base
                                               # automatically in has_secure_password.  Changed the message created
                                               # for password_digest to password in the localization file in config/locales
   validates :password_confirmation, presence: true
+  
+  def feed
+    # preliminary code to demo
+    Micropost.where("user_id = ?", id)
+  end
   
   private
     def create_remember_token
