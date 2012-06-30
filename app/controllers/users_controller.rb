@@ -1,6 +1,7 @@
 
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:index, :edit, :update]
+  before_filter :signed_in_user, 
+            only: [:index, :edit, :update, :show, :following, :followers]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: [:destroy]
   before_filter :not_signed_in, only: [:new, :create]
@@ -23,7 +24,7 @@ class UsersController < ApplicationController
     if @user.save
       sign_in @user
       flash[:success] = "Welcome to the sample app!"
-      redirect_to @user
+      redirect_to root_path
     else
       render 'new'
     end
@@ -53,6 +54,20 @@ class UsersController < ApplicationController
       flash[:success] = "User deleted."
     end
     redirect_to users_path
+  end
+  
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.followed_users.paginate(page: params[:page])
+    render 'show_follow'
+  end
+  
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
   end
   
   private

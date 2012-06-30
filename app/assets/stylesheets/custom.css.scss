@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
 	font-size: 3em;
 	letter-spacing: -2px;
-	margin-bottom: 30px;
+	margin-bottom: 5px;
 	text-align: center;
 }
 
@@ -182,3 +182,31 @@ aside {
 	}
 }
 
+.stats {
+	overflow: auto;
+	a {
+		float: left;
+		padding:  15px;
+		border-left: 1px solid $grayLighter;
+		color: gray;
+		&:first_child {
+			padding-left: 0;
+			border: 0;
+		}
+		&:hover {
+			text_decoration: none;
+			color: $blue;
+		}
+	}
+	strong {
+		display: block;
+	}
+}
+
+.user_avatars {
+	overflow: auto;
+	margin-top: 10px;
+	.gravatar {
+		margin: 1px 1px;
+	}
+}
