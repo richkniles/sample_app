@@ -11,7 +11,7 @@
 #
 
 class User < ActiveRecord::Base
-  attr_accessible :email, :name, :password, :password_confirmation
+  attr_accessible :email, :name, :user_name, :password, :password_confirmation
   has_secure_password
   has_many :microposts, dependent: :destroy
   has_many :relationships, foreign_key: "follower_id", dependent: :destroy
@@ -29,6 +29,9 @@ class User < ActiveRecord::Base
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX },
                     uniqueness: { case_sensitive: false }
+                    
+  validates :user_name, presence: true, uniqueness: { case_sensitive: false }
+  
   validates :password, length: { minimum: 6 } # presence: true not needed because password_digest covers this
                                               # automatically in has_secure_password.  Changed the message created
                                               # for password_digest to password in the localization file in config/locales

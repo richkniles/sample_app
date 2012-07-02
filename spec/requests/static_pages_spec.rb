@@ -57,7 +57,19 @@ describe "Static pages" do
         # note the '1.' The period is required to avoid match with micropost 10
         page.should_not have_content("micropost 1.") 
       end
-
+      
+      it "should have a micropost text area" do
+        page.should have_selector("textarea")
+      end
+      
+      describe "@replies should require existing user" do
+        before do
+          fill_in "micropost_content", with: "@NonExistentUser lorem ipsum"
+          click_button "Post"
+        end
+        
+        it { should have_content "NonExistentUser does not exist"}
+      end
       
       it "should render the user feed" do
         user.feed.each do |item|

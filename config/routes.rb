@@ -20,6 +20,8 @@ SampleApp::Application.routes.draw do
   match '/about', to: 'static_pages#about'
   match '/contact', to: 'static_pages#contact'
   
+  match '/check_user_name_uniqueness', to: 'users#check_user_name_uniqueness'
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

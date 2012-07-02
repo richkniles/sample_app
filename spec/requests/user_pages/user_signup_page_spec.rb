@@ -46,7 +46,15 @@ describe "user signup page" do
           it { should have_selector('title', text: 'Sign up') }
           it { should have_content("Email is invalid")}
         end
-
+        
+        describe "with no user_name" do
+          before do
+            signup_example_user_but_with ( { user_name: " " } )
+          end 
+          it { should have_selector('title', text: 'Sign up') }
+          it { should have_content("User name can't be blank")}
+        end
+        
         describe "with no password" do
           before do
             signup_example_user_but_with( { password: " " })
@@ -79,6 +87,7 @@ describe "user signup page" do
       before do
         fill_in "Name",         with: "Example User"
         fill_in "Email",        with: "user@example.com"
+        fill_in "User name",    with: "user"
         fill_in "Password",     with: "foobar"
         fill_in "Password confirmation", with: "foobar"
       end
@@ -106,6 +115,7 @@ describe "user signup page" do
             fill_in "Name",         with: "Example User"
             fill_in "Email",        with: "user@example.com"
             fill_in "Password",     with: "foobar"
+            fill_in "User name",    with: "foouser"
             fill_in "Password confirmation", with: "foobar"
             click_button submit
           end
@@ -113,6 +123,39 @@ describe "user signup page" do
           it { should have_content("Email has already been taken")}
 
         end
+        
+        describe "try to create another user with same user_name" do
+          before do 
+            click_link "Sign out"
+            visit signup_path
+            fill_in "Name",         with: "Example User"
+            fill_in "Email",        with: "foouser@example.com"
+            fill_in "Password",     with: "foobar"
+            fill_in "User name",    with: "user"
+            fill_in "Password confirmation", with: "foobar"
+            click_button submit
+          end
+          it { should have_selector('title', text: 'Sign up') }
+          it { should have_content("User name has already been taken")}
+
+        end
+        
+        describe "it should check user name uniqueness while typing" do
+          let(:user) { FactoryGirl.create (:user) }
+          # don't know how to do this without including implementation details in test
+          it "should say already taken" do
+            xhr :get, "/check_user_name_uniqueness", { user_name: user.user_name }
+            response.should be_success
+            #page.should have_content("taken")
+          end
+          it "should say available" do
+            xhr :get, "/check_user_name_uniqueness", { user_name: "blah" }
+            response.should be_success
+            #page.should have_content("available")
+          end
+        end
+        
+        
       end
     end
 

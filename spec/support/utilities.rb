@@ -16,6 +16,7 @@ end
 def signup_example_user_but_with(params)
   fill_in "Name",         with: (params[:name] || "Example User")
   fill_in "Email",        with: (params[:email] || "user@example.com")
+  fill_in "User name",    with: (params[:user_name]) || "user"
   fill_in "Password",     with: (params[:password] || "foobar")
   fill_in "Password confirmation", with: (params[:password_confirmation] || "foobar")
   click_button submit

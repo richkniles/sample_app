@@ -3,6 +3,11 @@
 <%= f.label :name %>
 <%= f.text_field :name %>
 
+<%= f.label :user_name, style: 'display:inline' %>
+<div id='username_notification' style='display:inline'></div>
+<%= f.text_field :user_name, 
+onkeyup: "$.ajax('/check_user_name_uniqueness?user_name=' + document.getElementById('user_user_name').value)" %>
+
 <%= f.label :email %>
 <%= f.text_field :email %>
 

@@ -9,8 +9,11 @@ class MicropostsController < ApplicationController
       flash[:success] = "Micropost created"
       redirect_to root_path
     else
-      @feed_items = current_user.feed
-      render 'static_pages/home'
+     # @feed_items = current_user.feed
+     # render 'static_pages/home'
+     flash[:error] = @micropost.errors.full_messages.join
+     redirect_to root_path
+     
     end
   end
   

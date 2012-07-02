@@ -4,6 +4,9 @@ class Micropost < ActiveRecord::Base
   
   validates :user_id, presence: true
   validates :content, presence: true, length: { maximum: 140 }
+  validate  :at_reply_user_exists
+
+
   default_scope order: 'microposts.created_at DESC'
   
   def self.from_users_followed_by(user)
@@ -13,4 +16,21 @@ class Micropost < ActiveRecord::Base
               followed_user_ids: user.followed_user_ids, user_id: user)
   end
   
+  #private
+    
+    def at_reply_user_exists
+      unless !content.starts_with?("@") || check_user
+        errors.add(:content, "Post starting with @ must have existing user after @. #{get_reply_user} does not exist")
+      end
+    end
+     
+    def get_reply_user
+      md = /@[^ ]* /.match(content).to_s
+      md[1..md.length-2]
+    end
+      
+    def check_user
+      User.where("LOWER(user_name) = ?", get_reply_user.downcase).count > 0
+    end
 end
+

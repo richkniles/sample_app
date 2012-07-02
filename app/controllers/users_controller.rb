@@ -1,5 +1,6 @@
 
 class UsersController < ApplicationController
+  
   before_filter :signed_in_user, 
             only: [:index, :edit, :update, :show, :following, :followers]
   before_filter :correct_user, only: [:edit, :update]
@@ -68,6 +69,23 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @users = @user.followers.paginate(page: params[:page])
     render 'show_follow'
+  end
+  
+  def check_user_name_uniqueness
+    user_name = params[:user_name]
+    if (user_name.empty?)
+      @username_notification = " -- can not be empty!"
+    elsif current_user && current_user.user_name == user_name
+      @username_notification = " -- that is you!"
+    elsif current_user && current_user.user_name.downcase == user_name.downcase
+      @username_notification = " -- ok to change capitaliztion..."
+    else
+      match = User.where("LOWER(user_name) = '#{user_name.downcase}'")
+      avail = (match.count==0)
+      @username_notification = "#{avail ? 'available' : 'taken'}"
+    end
+   # @style = "#{avail ? 'color:red; text-decoration:blink' : 'color:green; text-decoration:none'}"
+    render 'username_notification'
   end
   
   private

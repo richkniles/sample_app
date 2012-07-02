@@ -14,7 +14,7 @@ require 'spec_helper'
 describe User do
 
   before do 
-    @user = User.new(name: "Example User", email: "user@example.com",
+    @user = User.new(name: "Example User", email: "user@example.com", user_name: "Example",
                       password: "foobar", password_confirmation: "foobar")
   end
   
@@ -22,6 +22,7 @@ describe User do
   
   it { should respond_to(:name)  }
   it { should respond_to(:email) }
+  it { should respond_to(:user_name) }
   it { should respond_to(:password_digest)}
   it { should respond_to(:password) }
   it { should respond_to(:password_confirmation) }
@@ -40,9 +41,7 @@ describe User do
   
   it { should respond_to(:reverse_relationships) }
   it { should respond_to(:followers) }
-  
- #it { should respond_to(:followers) }
-  
+    
   it { should be_valid }
   
   describe "when name is not present" do
@@ -52,6 +51,11 @@ describe User do
   
   describe "when email is not present" do
     before { @user.email = " " }
+    it { should_not be_valid }
+  end
+  
+  describe "when user_name is not present" do
+    before { @user.user_name = " " }
     it { should_not be_valid }
   end
   
@@ -88,6 +92,19 @@ describe User do
       user_with_same_email.save
     end
     
+    it { should_not be_valid }
+  end
+  
+  describe "user name already taken" do
+    before do
+      user_with_same_user_name = @user.dup
+      user_with_same_user_name.user_name = @user.user_name.upcase
+      if user_with_same_user_name.user_name == @user.user_name
+        user_with_same_user_name.user_name = @user.user_name.downcase 
+      end
+      user_with_same_user_name.save
+    end
+      
     it { should_not be_valid }
   end
   
@@ -179,11 +196,11 @@ describe User do
       end
     end
     
-    describe "stats" do
+    describe "micropost feed" do
       let(:unfollowed_post) do
-        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user, user_name: 'UnFollowedUser'))
       end
-      let(:followed_user) { FactoryGirl.create(:user) }
+      let(:followed_user) { FactoryGirl.create(:user, user_name: 'FollowedUser') }
       
       before do
         @user.follow!(followed_user)
@@ -197,6 +214,22 @@ describe User do
         followed_user.microposts.each do |micropost|
           should include(micropost)
         end
+      end
+      
+      describe "replies should land in appropriate feeds" do
+        let!(:third_user) { FactoryGirl.create(:user) }
+        let(:reply_micropost_to_followed_user) do
+          FactoryGirl.create(:micropost, user: third_user, content: "@FolleowdUser ipsum nicht!")
+        end
+        let(:reply_micropost_to_unfollowed_user) do
+          FactoryGirl.create(:micropost, user: third_user, content: "@UnFolleowdUser ipsum nicht!")
+        end
+        before do
+          third_user.follow!(followed_user)
+        end
+        
+        its(:feed) { should include(:reply_micropost_to_followed_user) }
+        its(:feed) { should_not include(:reply_micropost_to_unfollowed_user) }
       end
 
     end
