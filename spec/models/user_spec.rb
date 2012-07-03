@@ -200,7 +200,7 @@ describe User do
       let(:unfollowed_post) do
         FactoryGirl.create(:micropost, user: FactoryGirl.create(:user, user_name: 'UnFollowedUser'))
       end
-      let(:followed_user) { FactoryGirl.create(:user, user_name: 'FollowedUser') }
+      let!(:followed_user) { FactoryGirl.create(:user, user_name: 'FollowedUser') }
       
       before do
         @user.follow!(followed_user)
@@ -215,21 +215,27 @@ describe User do
           should include(micropost)
         end
       end
-      
       describe "replies should land in appropriate feeds" do
         let!(:third_user) { FactoryGirl.create(:user) }
-        let(:reply_micropost_to_followed_user) do
-          FactoryGirl.create(:micropost, user: third_user, content: "@FolleowdUser ipsum nicht!")
+        let!(:reply_micropost_to_followed_user) do
+          third_user.microposts.create content: "@FollowedUser ipsum nicht!"
         end
-        let(:reply_micropost_to_unfollowed_user) do
-          FactoryGirl.create(:micropost, user: third_user, content: "@UnFolleowdUser ipsum nicht!")
+        let!(:reply_micropost_to_unfollowed_user) do
+          third_user.microposts.create content: "@UnFollowedUser ipsum nicht!"
         end
         before do
           third_user.follow!(followed_user)
+          reply_micropost_to_followed_user.save
+          reply_micropost_to_unfollowed_user.save
         end
         
-        its(:feed) { should include(:reply_micropost_to_followed_user) }
-        its(:feed) { should_not include(:reply_micropost_to_unfollowed_user) }
+        describe "reply to followed user" do
+          its(:feed) { should include(reply_micropost_to_followed_user) } 
+        end
+        
+        describe "reply to unfollowed user" do
+          its(:feed) { should_not include(reply_micropost_to_unfollowed_user) }
+        end
       end
 
     end
