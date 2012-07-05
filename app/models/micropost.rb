@@ -22,7 +22,7 @@ class Micropost < ActiveRecord::Base
     
     def at_reply_user_exists
       unless !content.starts_with?("@") || check_user
-        errors.add(:content, "Post starting with @ must have existing user after @. #{get_reply_user} does not exist")
+        errors.add(:content, "starting with @<user> is a message to a user. @#{get_reply_user} does not exist")
       end
     end
     

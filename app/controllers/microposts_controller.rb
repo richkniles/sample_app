@@ -3,6 +3,11 @@ class MicropostsController < ApplicationController
   before_filter :signed_in_user
   before_filter :correct_user, only: :destroy
   
+  def index
+    @query = params[:q]
+    @microposts = Micropost.where("content like ?", "%#{params[:q]}%").paginate(page: params[:page])
+  end
+  
   def create
     @micropost = current_user.microposts.build(params[:micropost])
     if @micropost.save
@@ -10,7 +15,8 @@ class MicropostsController < ApplicationController
       redirect_to root_path
     else
      #@feed_items = current_user.feed
-     @feed_items = current_user.feed.paginate(page: params[:page])
+     @user = current_user
+     @microposts = current_user.feed.paginate(page: params[:page])
      render 'static_pages/home'
      #flash[:error] = @micropost.errors.full_messages.join
      #redirect_to root_path

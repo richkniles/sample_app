@@ -1,6 +1,9 @@
 <% if @microposts.any? %>
+	<h3><%= "Found #{@microposts.count} microposts containing '#{@query}'"%></h3>
 	<ol class="microposts">
 		<%= render partial: 'shared/micropost', collection: @microposts %>
 	</ol>
 	<%= will_paginate @microposts %>
+<% else %>
+	<h3><%= "No microposts found containing '#{@query}'" %></h3>
 <% end %>
